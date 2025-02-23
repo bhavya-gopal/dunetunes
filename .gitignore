@@ -1,0 +1,6 @@
+.cache
+*.cache
+check_data.py
+find_device_ids.py
+play_song.py
+.env
