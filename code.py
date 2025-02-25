@@ -2,12 +2,17 @@
 
 import time
 import displayio
+import board
+import busio
 from adafruit_clue import clue
 from adafruit_display_text import label
 import terminalio
 
 
 previous_mode = None
+
+# Set up Serial communication
+uart = busio.UART(board.TX, board.RX, baudrate=115200)
 
 clue_display = clue.display
 clue_group = displayio.Group()
@@ -36,6 +41,7 @@ while True:
     if current_time - last_button_check > 0.1:
         last_button_check = current_time
         if clue.button_a and alarm_active:
+            uart.write(("pause_alarm\n").encode())  # 🚀 Send "pause_alarm"
             print("pause_alarm")
             alarm_active = False  
 
@@ -63,7 +69,8 @@ while True:
             text_color = 0xFF0000  
 
             if not alarm_active:  
-                alarm_active = True  
+                alarm_active = True
+                uart.write(("warning\n").encode())  
 
                 # Flash LED and play tone
                 for _ in range(3):  
@@ -86,5 +93,6 @@ while True:
             mode_label1.color = text_color  
             mode_label2.text = mode_text2  
             mode_label2.color = text_color
+            uart.write((mode + "\n").encode())
             previous_mode = mode 
             print(mode)
